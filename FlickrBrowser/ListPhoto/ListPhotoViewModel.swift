@@ -10,11 +10,14 @@ import UIKit
 
 class ListPhotoViewModel {
     let apiService: APIServiceProtocol
+    let sceneCoordinator: SceneCoordinatorType
     
     var showPhotos: ItemsResponse<FlickrPhoto>? = nil
     
-    init(apiService: APIServiceProtocol = APIManager()) {
+    init(apiService: APIServiceProtocol = APIManager(),
+         sceneCoordinator: SceneCoordinatorType) {
         self.apiService = apiService
+        self.sceneCoordinator = sceneCoordinator
     }
     
     func searchPhotosAction(term: String?) {
@@ -27,6 +30,6 @@ class ListPhotoViewModel {
     func showPhotoDetails(photo: FlickrPhoto) {
         let photoDetailsVM = PhotoDetailsViewModel(photo: photo, apiService: apiService)
         let photoDetailsScene = Scene.photoDetails(photoDetailsVM)
-        SceneCoordinator.showViewController(vc: photoDetailsScene.viewController(), typeTransition: .push)
+        sceneCoordinator.transition(scene: photoDetailsScene, typeTransition: .push)
     }
 }

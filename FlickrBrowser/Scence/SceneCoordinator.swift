@@ -8,42 +8,51 @@
 
 import UIKit
 
-enum TransitionType {
-    case push
-    case present
-    case root
-}
-
-struct SceneCoordinator {
-    private static func topViewController(_ base: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) -> UIViewController? {
-        if let nav = base as? UINavigationController {
-            return topViewController(nav.visibleViewController)
-        }
-        if let tab = base as? UITabBarController {
-            if let selected = tab.selectedViewController {
-                return topViewController(selected)
-            }
-        }
-        if let presented = base?.presentedViewController {
-            return topViewController(presented)
-        }
-        return base
+class SceneCoordinator: SceneCoordinatorType {
+//    private static func topViewController(_ base: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) -> UIViewController? {
+//        if let nav = base as? UINavigationController {
+//            return topViewController(nav.visibleViewController)
+//        }
+//        if let tab = base as? UITabBarController {
+//            if let selected = tab.selectedViewController {
+//                return topViewController(selected)
+//            }
+//        }
+//        if let presented = base?.presentedViewController {
+//            return topViewController(presented)
+//        }
+//        return base
+//    }
+    
+    private var currVC: UIViewController
+    private var window: UIWindow
+    
+    init(window: UIWindow) {
+        self.window = window
+        currVC = window.rootViewController!
     }
     
-    private static func changeRootViewController(with vc: UIViewController) {
-        let delegate = UIApplication.shared.delegate as! AppDelegate
-        delegate.window?.rootViewController = vc
-        delegate.window?.makeKeyAndVisible()
+    static func actualViewController(for viewController: UIViewController) -> UIViewController {
+        if let navigationController = viewController as? UINavigationController {
+            return navigationController.viewControllers.first!
+        } else {
+            return viewController
+        }
     }
     
-    static func showViewController(vc: UIViewController, typeTransition: TransitionType = .root) {
+    func transition(scene: Scene, typeTransition: TransitionType) {
+        let destinationVC = scene.viewController()
         switch typeTransition {
         case .root:
-            changeRootViewController(with: vc)
+            currVC = SceneCoordinator.actualViewController(for: destinationVC)
+            window.rootViewController = destinationVC
         case .present:
-            topViewController()?.present(vc, animated: true, completion: nil)
+            currVC.present(destinationVC, animated: true, completion: nil)
         case .push:
-            topViewController()?.navigationController?.pushViewController(vc, animated: true)
+            let actualVC = SceneCoordinator.actualViewController(for: destinationVC)
+            if let navVC = currVC.navigationController {
+                navVC.pushViewController(actualVC, animated: true)
+            }
         }
     }
 }

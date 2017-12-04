@@ -6,4 +6,14 @@
 //  Copyright © 2017 Dinh Thanh An. All rights reserved.
 //
 
-import Foundation
+import UIKit
+
+enum TransitionType {
+    case push
+    case present
+    case root
+}
+
+protocol SceneCoordinatorType {
+    func transition(scene: Scene, typeTransition: TransitionType)
+}

@@ -7,29 +7,58 @@
 //
 
 import XCTest
+@testable import FlickerBrowser
 
-class FlickrBrowserTests: XCTestCase {
+class FlickrListPhotoViewModelTests: XCTestCase {
+    var listPhotoVM: ListPhotoViewModel!
+    var mockAPI: MockAPIService!
+    var mockSceneCoordinator: MockSceneCoordinator!
     
     override func setUp() {
         super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        mockAPI = MockAPIService()
+        mockSceneCoordinator = MockSceneCoordinator()
+        listPhotoVM = ListPhotoViewModel(apiService: mockAPI, sceneCoordinator: mockSceneCoordinator)
     }
     
     override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        listPhotoVM = nil
+        mockAPI = nil
+        mockSceneCoordinator = nil
+        
         super.tearDown()
     }
     
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    func testAPISearchPhotosIsNotCalled() {
+        listPhotoVM.searchPhotosAction(term: "superman")
+        assert(mockAPI.hasCalledSearchPhoto == false)
     }
     
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
+    func testAPISearchPhotosIsCalled() {
+        listPhotoVM.showPhotos = {_ in }
+        listPhotoVM.searchPhotosAction(term: "superman")
+        assert(mockAPI.hasCalledSearchPhoto == true)
+    }
+    
+    func testWillTransistionToOtherScene() {
+        let photo = FlickrPhoto(from: ["id": "123"])!
+        listPhotoVM.showPhotoDetails(photo: photo)
+        assert(mockSceneCoordinator.hasCalledTransition == true)
+    }
+    
+    class MockSceneCoordinator: SceneCoordinatorType {
+        var hasCalledTransition = false
+        
+        func transition(scene: Scene, typeTransition: TransitionType) {
+            hasCalledTransition = true
         }
     }
     
+    class MockAPIService: APIServiceProtocol{
+        var hasCalledSearchPhoto = false
+        
+        func searchForImages(with term: String, itemPerPage: Int, success: @escaping ([FlickrPhoto]) -> (), failure: FailureResponse?) {
+            hasCalledSearchPhoto = true
+        }
+    }
 }

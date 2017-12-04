@@ -7,7 +7,20 @@
 		<key>FlickerBrowser.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>0</integer>
+			<integer>4</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>D11D0C561FD24E040068200E</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>D12C79991FD3AF7100CE12FA</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>
